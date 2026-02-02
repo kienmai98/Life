@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Life App - Preview</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --primary: #007AFF;
+            --success: #34C759;
+            --danger: #FF3B30;
+            --warning: #FF9500;
+            --bg: #f5f5f5;
+            --card: #ffffff;
+            --text: #1a1a1a;
+            --text-secondary: #666666;
+            --border: #e0e0e0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #222;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .phone-frame {
+            width: 375px;
+            height: 812px;
+            background: #1a1a1a;
+            border-radius: 50px;
+            padding: 15px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            position: relative;
+        }
+
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: var(--bg);
+            border-radius: 40px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 35px;
+            background: #1a1a1a;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+            z-index: 100;
+        }
+
+        .status-bar {
+            position: absolute;
+            top: 12px;
+            left: 0;
+            right: 0;
+            height: 20px;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 30px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+            z-index: 99;
+        }
+
+        .app-container {
+            height: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Auth Screens */
+        .auth-screen {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 40px 30px;
+            background: white;
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .auth-title {
+            font-size: 32px;
+            font-weight: bold;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        .auth-subtitle {
+            font-size: 16px;
+            color: var(--text-secondary);
+        }
+
+        .form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .input {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 16px;
+            background: #f9f9f9;
+            font-family: inherit;
+        }
+
+        .btn {
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn:active {
+            opacity: 0.8;
+        }
+
+        .link-btn {
+            text-align: center;
+            padding: 12px;
+            background: none;
+            border: none;
+            color: var(--primary);
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        /* Main App */
+        .main-app {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding-top: 50px;
+        }
+
+        .screen {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        /* Dashboard */
+        .dashboard-header {
+            padding: 8px 0 24px;
+        }
+
+        .greeting {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--text);
+        }
+
+        .date {
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .card-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .amount {
+            font-size: 36px;
+            font-weight: bold;
+            color: var(--text);
+        }
+
+        .category-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 0;
+        }
+
+        .category-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--primary);
+        }
+
+        .category-name {
+            flex: 1;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .category-amount {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .event-item, .transaction-item {
+            display: flex;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .event-item:last-child, .transaction-item:last-child {
+            border-bottom: none;
+        }
+
+        .event-time {
+            width: 50px;
+            text-align: center;
+        }
+
+        .event-time-text {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .event-details {
+            flex: 1;
+        }
+
+        .event-title {
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .event-location {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .transaction-left {
+            flex: 1;
+        }
+
+        .transaction-desc {
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .transaction-category {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .transaction-amount {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--danger);
+        }
+
+        .empty-text {
+            color: #999;
+            font-style: italic;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* Calendar */
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0 16px;
+        }
+
+        .nav-arrow {
+            font-size: 18px;
+            color: var(--primary);
+            padding: 8px;
+            cursor: pointer;
+        }
+
+        .month-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .week-days {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 8px;
+        }
+
+        .week-day {
+            width: 40px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+        }
+
+        .day-cell {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .day-cell:hover {
+            background: #f0f0f0;
+        }
+
+        .day-cell.today {
+            border: 1px solid var(--primary);
+        }
+
+        .day-cell.selected {
+            background: var(--primary);
+            color: white;
+        }
+
+        .day-cell.other-month {
+            color: #ccc;
+        }
+
+        .event-dot {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: var(--danger);
+            margin-top: 2px;
+        }
+
+        .events-section {
+            margin-top: 16px;
+            padding: 16px;
+            background: white;
+            border-radius: 16px;
+            margin-bottom: 80px;
+        }
+
+        .events-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        /* Transactions */
+        .trans-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0 16px;
+        }
+
+        .trans-title {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .add-btn {
+            background: var(--primary);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+        }
+
+        .month-selector {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 24px;
+            margin-bottom: 16px;
+        }
+
+        .summary-card {
+            background: white;
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 16px;
+        }
+
+        .summary-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .summary-amount {
+            font-size: 32px;
+            font-weight: bold;
+            margin: 4px 0 16px;
+        }
+
+        .category-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .chip {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #f5f5f5;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+        }
+
+        .chip-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .transaction-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+        }
+
+        .trans-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 12px;
+        }
+
+        .trans-left {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+
+        .trans-info h4 {
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .trans-info p {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        /* Profile */
+        .profile-header {
+            align-items: center;
+            padding: 40px 0 24px;
+            text-align: center;
+        }
+
+        .avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        .profile-name {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .profile-email {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .stats-row {
+            display: flex;
+            background: white;
+            margin: 0 0 16px;
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        .stat-item {
+            flex: 1;
+            text-align: center;
+        }
+
+        .stat-item:nth-child(2) {
+            border-left: 1px solid #f0f0f0;
+            border-right: 1px solid #f0f0f0;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .settings-section {
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .section-header {
+            font-size: 13px;
+            font-weight: 600;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f5f5f5;
+            cursor: pointer;
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+
+        .setting-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .setting-icon {
+            font-size: 20px;
+        }
+
+        .setting-label {
+            font-size: 16px;
+        }
+
+        .chevron {
+            color: #ccc;
+        }
+
+        .switch {
+            width: 50px;
+            height: 30px;
+            background: #ddd;
+            border-radius: 15px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .switch.active {
+            background: var(--primary);
+        }
+
+        .switch::after {
+            content: '';
+            position: absolute;
+            width: 26px;
+            height: 26px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .switch.active::after {
+            transform: translateX(20px);
+        }
+
+        .logout-btn {
+            background: var(--danger);
+            color: white;
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        /* Tab Bar */
+        .tab-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0 30px;
+            z-index: 100;
+        }
+
+        .tab {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 12px;
+            cursor: pointer;
+            opacity: 0.5;
+            transition: opacity 0.2s;
+        }
+
+        .tab.active {
+            opacity: 1;
+        }
+
+        .tab-icon {
+            font-size: 24px;
+        }
+
+        .tab-label {
+            font-size: 11px;
+        }
+
+        /* Add Transaction Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: flex-end;
+            z-index: 200;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            width: 100%;
+            max-width: 375px;
+            height: 90%;
+            border-radius: 24px 24px 0 0;
+            padding: 20px;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .modal-title {
+            font-size: 17px;
+            font-weight: 600;
+        }
+
+        .cancel-btn {
+            color: var(--text-secondary);
+            background: none;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .save-btn {
+            color: var(--primary);
+            background: none;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .amount-input-section {
+            text-align: center;
+            padding: 32px 0;
+            border-bottom: 1px solid #f0f0f0;
+            margin-bottom: 24px;
+        }
+
+        .amount-display {
+            font-size: 48px;
+            font-weight: 300;
+        }
+
+        .input-group {
+            margin-bottom: 24px;
+        }
+
+        .input-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .category-select {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+        }
+
+        .category-option {
+            padding: 10px 16px;
+            border-radius: 20px;
+            background: #f5f5f5;
+            border: 2px solid transparent;
+            white-space: nowrap;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .category-option.selected {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .camera-btn {
+            border: 2px dashed var(--primary);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            color: var(--primary);
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 16px;
+        }
+
+        /* Web preview hint */
+        .preview-hint {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 24px;
+            font-size: 14px;
+            z-index: 1000;
+        }
+
+        @media (max-width: 500px) {
+            .phone-frame {
+                width: 100%;
+                height: 100vh;
+                border-radius: 0;
+                padding: 0;
+            }
+            .phone-screen {
+                border-radius: 0;
+            }
+            .notch {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-frame">
+        <div class="phone-screen">
+            <div class="notch"></div>
+            <div class="status-bar">
+                <span id="clock">9:41</span>
+                <span>📶 5G 🔋</span>
+            </div>
+
+            <div class="app-container" id="app">
+                <!-- Auth Screen -->
+                <div class="auth-screen" id="auth-screen">
+                    <div class="auth-header">
+                        <div class="auth-title">Welcome to Life</div>
+                        <div class="auth-subtitle">Manage your schedule & finances</div>
+                    </div>
+                    <div class="form">
+                        <input type="email" class="input" placeholder="Email" value="demo@example.com">
+                        <input type="password" class="input" placeholder="Password" value="password">
+                        <button class="btn btn-primary" onclick="login()">Log In</button>
+                        <button class="link-btn" onclick="showRegister()">Don't have an account? Sign up</button>
+                    </div>
+                </div>
+
+                <!-- Register Screen -->
+                <div class="auth-screen" id="register-screen" style="display:none;">
+                    <div class="auth-header">
+                        <div class="auth-title">Create Account</div>
+                        <div class="auth-subtitle">Start managing your life</div>
+                    </div>
+                    <div class="form">
+                        <input type="email" class="input" placeholder="Email">
+                        <input type="password" class="input" placeholder="Password">
+                        <input type="password" class="input" placeholder="Confirm Password">
+                        <button class="btn btn-success" onclick="login()">Sign Up</button>
+                        <button class="link-btn" onclick="showLogin()">Already have an account? Log in</button>
+                    </div>
+                </div>
+
+                <!-- Main App -->
+                <div class="main-app" id="main-app" style="display:none;">
+                    <!-- Dashboard -->
+                    <div class="screen active" id="dashboard-screen">
+                        <div class="dashboard-header">
+                            <div class="greeting">Hello, Demo! 👋</div>
+                            <div class="date" id="current-date">Monday, February 2nd</div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-title">This Month's Spending</div>
+                            <div class="amount">$1,247.50</div>
+                            <div class="category-item">
+                                <div class="category-dot" style="background:#FF6B6B"></div>
+                                <span class="category-name">Food & Dining</span>
+                                <span class="category-amount">$450.00</span>
+                            </div>
+                            <div class="category-item">
+                                <div class="category-dot" style="background:#4ECDC4"></div>
+                                <span class="category-name">Transportation</span>
+                                <span class="category-amount">$320.00</span>
+                            </div>
+                            <div class="category-item">
+                                <div class="category-dot" style="background:#45B7D1"></div>
+                                <span class="category-name">Shopping</span>
+                                <span class="category-amount">$280.50</span>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-title">Upcoming Events</div>
+                            <div class="event-item">
+                                <div class="event-time">
+                                    <div class="event-time-text">Feb 3</div>
+                                </div>
+                                <div class="event-details">
+                                    <div class="event-title">Team Standup</div>
+                                    <div class="event-location">📍 Google Meet</div>
+                                </div>
+                            </div>
+                            <div class="event-item">
+                                <div class="event-time">
+                                    <div class="event-time-text">Feb 5</div>
+                                </div>
+                                <div class="event-details">
+                                    <div class="event-title">Dentist Appointment</div>
+                                    <div class="event-location">📍 Downtown Clinic</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-title">Recent Transactions</div>
+                            <div class="transaction-item">
+                                <div class="transaction-left">
+                                    <div class="transaction-desc">Grocery Store</div>
+                                    <div class="transaction-category">Food & Dining</div>
+                                </div>
+                                <div class="transaction-amount">-$85.40</div>
+                            </div>
+                            <div class="transaction-item">
+                                <div class="transaction-left">
+                                    <div class="transaction-desc">Uber Ride</div>
+                                    <div class="transaction-category">Transportation</div>
+                                </div>
+                                <div class="transaction-amount">-$24.50</div>
+                            </div>
+                            <div class="transaction-item">
+                                <div class="transaction-left">
+                                    <div class="transaction-desc">Netflix Subscription</div>
+                                    <div class="transaction-category">Entertainment</div>
+                                </div>
+                                <div class="transaction-amount">-$15.99</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Calendar -->
+                    <div class="screen" id="calendar-screen">
+                        <div class="calendar-header">
+                            <div class="nav-arrow" onclick="changeMonth(-1)">◀</div>
+                            <div class="month-title" id="calendar-month">February 2026</div>
+                            <div class="nav-arrow" onclick="changeMonth(1)">▶</div>
+                        </div>
+                        <div class="week-days">
+                            <div class="week-day">Sun</div>
+                            <div class="week-day">Mon</div>
+                            <div class="week-day">Tue</div>
+                            <div class="week-day">Wed</div>
+                            <div class="week-day">Thu</div>
+                            <div class="week-day">Fri</div>
+                            <div class="week-day">Sat</div>
+                        </div>
+                        <div class="calendar-grid" id="calendar-grid">
+                            <!-- Generated by JS -->
+                        </div>
+                        <div class="events-section">
+                            <div class="events-title">Monday, February 2nd</div>
+                            <div class="empty-text">No events for this day</div>
+                            <div class="input-group" style="margin-top:16px;">
+                                <input type="text" class="input" placeholder="Add a new event..." style="margin-bottom:8px;">
+                                <button class="btn btn-primary">Add Event</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Transactions -->
+                    <div class="screen" id="transactions-screen">
+                        <div class="trans-header">
+                            <div class="trans-title">Transactions</div>
+                            <button class="add-btn" onclick="openAddTransaction()">+ Add</button>
+                        </div>
+                        <div class="month-selector">
+                            <div class="nav-arrow">◀</div>
+                            <div class="month-title">February 2026</div>
+                            <div class="nav-arrow">▶</div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="summary-label">Total Spent</div>
+                            <div class="summary-amount">$1,247.50</div>
+                            <div class="category-chips">
+                                <div class="chip">
+                                    <div class="chip-dot" style="background:#FF6B6B"></div>
+                                    Food: $450
+                                </div>
+                                <div class="chip">
+                                    <div class="chip-dot" style="background:#4ECDC4"></div>
+                                    Transport: $320
+                                </div>
+                                <div class="chip">
+                                    <div class="chip-dot" style="background:#45B7D1"></div>
+                                    Shopping: $280
+                                </div>
+                            </div>
+                        </div>
+                        <div class="transaction-card">
+                            <div class="trans-left">
+                                <div class="trans-icon" style="background:#FF6B6B">F</div>
+                                <div class="trans-info">
+                                    <h4>Grocery Store</h4>
+                                    <p>Food & Dining • Feb 1</p>
+                                </div>
+                            </div>
+                            <div class="transaction-amount">-$85.40</div>
+                        </div>
+                        <div class="transaction-card">
+                            <div class="trans-left">
+                                <div class="trans-icon" style="background:#4ECDC4">T</div>
+                                <div class="trans-info">
+                                    <h4>Uber Ride</h4>
+                                    <p>Transportation • Feb 1</p>
+                                </div>
+                            </div>
+                            <div class="transaction-amount">-$24.50</div>
+                        </div>
+                        <div class="transaction-card">
+                            <div class="trans-left">
+                                <div class="trans-icon" style="background:#DDA0DD">H</div>
+                                <div class="trans-info">
+                                    <h4>Gym Membership</h4>
+                                    <p>Health & Fitness • Jan 31</p>
+                                </div>
+                            </div>
+                            <div class="transaction-amount">-$49.99</div>
+                        </div>
+                        <div class="transaction-card">
+                            <div class="trans-left">
+                                <div class="trans-icon" style="background:#96CEB4">E</div>
+                                <div class="trans-info">
+                                    <h4>Movie Tickets</h4>
+                                    <p>Entertainment • Jan 30</p>
+                                </div>
+                            </div>
+                            <div class="transaction-amount">-$32.00</div>
+                        </div>
+                    </div>
+
+                    <!-- Profile -->
+                    <div class="screen" id="profile-screen">
+                        <div class="profile-header">
+                            <div class="avatar">D</div>
+                            <div class="profile-name">Demo User</div>
+                            <div class="profile-email">demo@example.com</div>
+                        </div>
+                        <div class="stats-row">
+                            <div class="stat-item">
+                                <div class="stat-value">12</div>
+                                <div class="stat-label">Transactions</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">$1.2k</div>
+                                <div class="stat-label">Total Spent</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">—</div>
+                                <div class="stat-label">Calendar</div>
+                            </div>
+                        </div>
+                        <div class="settings-section">
+                            <div class="section-header">Preferences</div>
+                            <div class="setting-item">
+                                <div class="setting-left">
+                                    <span class="setting-icon">🌙</span>
+                                    <span class="setting-label">Dark Mode</span>
+                                </div>
+                                <div class="switch" id="darkModeSwitch" onclick="toggleDarkMode()"></div>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-left">
+                                    <span class="setting-icon">📅</span>
+                                    <div>
+                                        <div class="setting-label">Google Calendar</div>
+                                        <div style="font-size:12px;color:#999">Not connected</div>
+                                    </div>
+                                </div>
+                                <span class="chevron">▶</span>
+                            </div>
+                        </div>
+                        <div class="settings-section">
+                            <div class="section-header">Account</div>
+                            <div class="setting-item">
+                                <div class="setting-left">
+                                    <span class="setting-icon">🔐</span>
+                                    <span class="setting-label">Change Password</span>
+                                </div>
+                                <span class="chevron">▶</span>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-left">
+                                    <span class="setting-icon">🔔</span>
+                                    <span class="setting-label">Notifications</span>
+                                </div>
+                                <span class="chevron">▶</span>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-left">
+                                    <span class="setting-icon">💾</span>
+                                    <span class="setting-label">Export Data</span>
+                                </div>
+                                <span class="chevron">▶</span>
+                            </div>
+                        </div>
+                        <div class="logout-btn" onclick="logout()">Log Out</div>
+                    </div>
+
+                    <!-- Tab Bar -->
+                    <div class="tab-bar">
+                        <div class="tab active" onclick="switchTab('dashboard')">
+                            <span class="tab-icon">🏠</span>
+                            <span class="tab-label">Home</span>
+                        </div>
+                        <div class="tab" onclick="switchTab('calendar')">
+                            <span class="tab-icon">📅</span>
+                            <span class="tab-label">Calendar</span>
+                        </div>
+                        <div class="tab" onclick="switchTab('transactions')">
+                            <span class="tab-icon">💰</span>
+                            <span class="tab-label">Money</span>
+                        </div>
+                        <div class="tab" onclick="switchTab('profile')">
+                            <span class="tab-icon">👤</span>
+                            <span class="tab-label">Profile</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Transaction Modal -->
+    <div class="modal-overlay" id="addTransactionModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="cancel-btn" onclick="closeAddTransaction()">Cancel</button>
+                <div class="modal-title">Add Transaction</div>
+                <button class="save-btn" onclick="saveTransaction()">Save</button>
+            </div>
+            <div class="amount-input-section">
+                <div class="amount-display">$0.00</div>
+            </div>
+            <div class="input-group">
+                <label class="input-label">Description</label>
+                <input type="text" class="input" placeholder="What did you spend on?" id="transDesc">
+            </div>
+            <div class="input-group">
+                <label class="input-label">Category</label>
+                <div class="category-select">
+                    <div class="category-option selected">Food & Dining</div>
+                    <div class="category-option">Transportation</div>
+                    <div class="category-option">Shopping</div>
+                    <div class="category-option">Entertainment</div>
+                    <div class="category-option">Bills</div>
+                </div>
+            </div>
+            <div class="input-group">
+                <label class="input-label">Date</label>
+                <input type="date" class="input" value="2026-02-02">
+            </div>
+            <div class="input-group">
+                <label class="input-label">Notes (Optional)</label>
+                <textarea class="input" rows="3" placeholder="Add any additional details..."></textarea>
+            </div>
+            <div class="camera-btn">📷 Attach Receipt</div>
+        </div>
+    </div>
+
+    <div class="preview-hint">Web Preview • Click tabs to navigate</div>
+
+    <script>
+        // Clock
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').textContent = now.toLocaleTimeString('en-US', { 
+                hour: 'numeric', 
+                minute: '2-digit',
+                hour12: true 
+            });
+        }
+        updateClock();
+        setInterval(updateClock, 1000);
+
+        // Date
+        const dateOptions = { weekday: 'long', month: 'long', day: 'numeric' };
+        document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', dateOptions);
+
+        // Auth
+        function login() {
+            document.getElementById('auth-screen').style.display = 'none';
+            document.getElementById('register-screen').style.display = 'none';
+            document.getElementById('main-app').style.display = 'flex';
+            renderCalendar();
+        }
+
+        function showRegister() {
+            document.getElementById('auth-screen').style.display = 'none';
+            document.getElementById('register-screen').style.display = 'flex';
+        }
+
+        function showLogin() {
+            document.getElementById('register-screen').style.display = 'none';
+            document.getElementById('auth-screen').style.display = 'flex';
+        }
+
+        function logout() {
+            document.getElementById('main-app').style.display = 'none';
+            document.getElementById('auth-screen').style.display = 'flex';
+        }
+
+        // Tab Navigation
+        function switchTab(tab) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            
+            document.getElementById(tab + '-screen').classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        // Dark Mode
+        function toggleDarkMode() {
+            const sw = document.getElementById('darkModeSwitch');
+            sw.classList.toggle('active');
+        }
+
+        // Calendar
+        let currentMonth = new Date();
+        
+        function renderCalendar() {
+            const grid = document.getElementById('calendar-grid');
+            const monthTitle = document.getElementById('calendar-month');
+            
+            const year = currentMonth.getFullYear();
+            const month = currentMonth.getMonth();
+            
+            monthTitle.textContent = currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+            
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const today = new Date();
+            
+            let html = '';
+            
+            // Empty cells for days before month starts
+            for (let i = 0; i < firstDay; i++) {
+                html += '<div class="day-cell other-month"></div>';
+            }
+            
+            // Days
+            const events = [3, 5, 12, 18, 25]; // Demo events
+            
+            for (let day = 1; day <= daysInMonth; day++) {
+                const isToday = today.getDate() === day && today.getMonth() === month;
+                const isSelected = day === 2;
+                const hasEvent = events.includes(day);
+                
+                html += `<div class="day-cell ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''}">
+                    ${day}
+                    ${hasEvent ? '<div class="event-dot"></div>' : ''}
+                </div>`;
+            }
+            
+            grid.innerHTML = html;
+        }
+
+        function changeMonth(delta) {
+            currentMonth.setMonth(currentMonth.getMonth() + delta);
+            renderCalendar();
+        }
+
+        // Add Transaction Modal
+        function openAddTransaction() {
+            document.getElementById('addTransactionModal').classList.add('active');
+        }
+
+        function closeAddTransaction() {
+            document.getElementById('addTransactionModal').classList.remove('active');
+        }
+
+        function saveTransaction() {
+            closeAddTransaction();
+            // Demo: would save in real app
+        }
+
+        // Category selection in modal
+        document.querySelectorAll('.category-option').forEach(opt => {
+            opt.addEventListener('click', function() {
+                document.querySelectorAll('.category-option').forEach(o => o.classList.remove('selected'));
+                this.classList.add('selected');
+            });
+        });
+    </script>
+</body>
+</html>
