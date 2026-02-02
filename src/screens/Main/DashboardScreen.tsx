@@ -1,8 +1,9 @@
 import React, { useEffect, useCallback } from 'react';
-import { View, StyleSheet, ScrollView, RefreshControl } from 'react-native';
-import { Text, Card, Surface, useTheme, Avatar, ProgressBar, Divider } from 'react-native-paper';
+import { View, StyleSheet, ScrollView, RefreshControl, TouchableOpacity } from 'react-native';
+import { Text, Card, Surface, useTheme, Avatar, ProgressBar, Divider, Button } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { useAuthStore } from '../../stores/authStore';
 import { useTransactionStore } from '../../stores/transactionStore';
@@ -12,6 +13,7 @@ import { TransactionCategory } from '../../types';
 
 const DashboardScreen: React.FC = () => {
   const theme = useTheme();
+  const navigation = useNavigation<NativeStackNavigationProp<any>>();
   const { user } = useAuthStore();
   const { 
     spendingSummary, 
@@ -207,6 +209,44 @@ const DashboardScreen: React.FC = () => {
           </Card.Content>
         </Card>
 
+        {/* Quick Actions */}
+        <Surface style={styles.quickActions} elevation={0}>
+          <Text variant="titleMedium" style={{ marginBottom: 12, fontWeight: '600' }}>
+            Quick Actions
+          </Text>
+          <View style={styles.quickActionsRow}>
+            <TouchableOpacity
+              style={styles.quickActionButton}
+              onPress={() => navigation.navigate('AddTransaction')}
+            >
+              <Surface style={[styles.quickActionIcon, { backgroundColor: theme.colors.primaryContainer }]}>
+                <Text style={{ fontSize: 24 }}>💰</Text>
+              </Surface>
+              <Text variant="bodySmall">Add Expense</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.quickActionButton}
+              onPress={() => navigation.navigate('Calendar')}
+            >
+              <Surface style={[styles.quickActionIcon, { backgroundColor: theme.colors.secondaryContainer }]}>
+                <Text style={{ fontSize: 24 }}>📅</Text>
+              </Surface>
+              <Text variant="bodySmall">View Schedule</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.quickActionButton}
+              onPress={() => navigation.navigate('Transactions')}
+            >
+              <Surface style={[styles.quickActionIcon, { backgroundColor: theme.colors.tertiaryContainer }]}>
+                <Text style={{ fontSize: 24 }}>📊</Text>
+              </Surface>
+              <Text variant="bodySmall">Transactions</Text>
+            </TouchableOpacity>
+          </View>
+        </Surface>
+
         {/* Sync Status */}
         {syncStatus.pendingChanges > 0 && (
           <Surface style={styles.syncBanner} elevation={0}>
@@ -305,6 +345,24 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
     backgroundColor: 'rgba(99, 102, 241, 0.1)',
+  },
+  quickActions: {
+    marginBottom: 16,
+  },
+  quickActionsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  quickActionButton: {
+    alignItems: 'center',
+  },
+  quickActionIcon: {
+    width: 56,
+    height: 56,
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 8,
   },
 });
 

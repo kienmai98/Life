@@ -5,6 +5,7 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  TouchableOpacity,
   Image,
 } from 'react-native';
 import {
@@ -18,16 +19,18 @@ import {
   IconButton,
   Surface,
   HelperText,
+  FAB,
+  Portal,
+  Modal,
 } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useCameraDevice, useCameraPermission } from 'react-native-vision-camera';
-import Geolocation from '@react-native-community/geolocation';
+import { format } from 'date-fns';
 
 import { useAuthStore } from '../../stores/authStore';
 import { useTransactionStore } from '../../stores/transactionStore';
 import { TransactionCategory, PaymentMethod } from '../../types';
-import { formatCurrency, generateId, capitalizeFirst } from '../../utils/helpers';
+import { getCategoryIcon, getCategoryColor, capitalizeFirst } from '../../utils/helpers';
 
 type AddTransactionScreenProps = {
   navigation: NativeStackNavigationProp<any, 'AddTransaction'>;
@@ -63,51 +66,32 @@ const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({ navigation 
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState<TransactionCategory>('food');
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('credit_card');
-  const [tags, setTags] = useState<string[]>([]);
-  const [tagInput, setTagInput] = useState('');
+  const [date, setDate] = useState(new Date());
+  const [notes, setNotes] = useState('');
   const [receiptImage, setReceiptImage] = useState<string | null>(null);
-  const [location, setLocation] = useState<{ latitude: number; longitude: number } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   const [categoryMenuVisible, setCategoryMenuVisible] = useState(false);
   const [paymentMenuVisible, setPaymentMenuVisible] = useState(false);
 
-  const { hasPermission, requestPermission } = useCameraPermission();
-  const device = useCameraDevice('back');
+  // Simulated receipt photo (in real app, this would use camera)
+  const handleAddReceipt = () => {
+    // For MVP, we'll simulate a receipt photo
+    // In production, this would open the camera
+    setReceiptImage('receipt_placeholder');
+  };
 
-  const handleAddTag = () => {
-    if (tagInput.trim() && !tags.includes(tagInput.trim())) {
-      setTags([...tags, tagInput.trim()]);
-      setTagInput('');
+  const handleRemoveReceipt = () => {
+    setReceiptImage(null);
+  };
+
+  const handleDateChange = (event: any, selectedDate?: Date) => {
+    setShowDatePicker(Platform.OS === 'ios');
+    if (selectedDate) {
+      setDate(selectedDate);
     }
-  };
-
-  const handleRemoveTag = (tagToRemove: string) => {
-    setTags(tags.filter((tag) => tag !== tagToRemove));
-  };
-
-  const handleScanReceipt = async () => {
-    if (!hasPermission) {
-      await requestPermission();
-    }
-    // Navigate to camera screen for receipt scanning
-    // This would typically open a camera screen
-  };
-
-  const handleGetLocation = () => {
-    Geolocation.getCurrentPosition(
-      (position) => {
-        setLocation({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-        });
-      },
-      (error) => {
-        console.error('Location error:', error);
-      },
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
-    );
   };
 
   const handleSave = async () => {
@@ -137,12 +121,11 @@ const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({ navigation 
         currency: 'USD',
         category,
         description: description.trim(),
-        date: new Date().toISOString(),
+        date: date.toISOString(),
         type,
         paymentMethod,
         receiptUrl: receiptImage || undefined,
-        location: location || undefined,
-        tags,
+        tags: notes ? [notes] : [],
       });
 
       navigation.goBack();
@@ -151,6 +134,16 @@ const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({ navigation 
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const formatAmountInput = (text: string) => {
+    // Only allow numbers and one decimal point
+    const cleaned = text.replace(/[^0-9.]/g, '');
+    const parts = cleaned.split('.');
+    if (parts.length > 2) {
+      return parts[0] + '.' + parts.slice(1).join('');
+    }
+    return cleaned;
   };
 
   return (
@@ -173,45 +166,65 @@ const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({ navigation 
 
           {/* Amount Input */}
           <Surface style={styles.amountContainer} elevation={0}>
-            <Text variant="headlineLarge" style={styles.currencySymbol}>
+            <Text variant="headlineLarge" style={[styles.currencySymbol, { color: theme.colors.primary }]}>
               $
             </Text>
             <TextInput
               value={amount}
-              onChangeText={setAmount}
+              onChangeText={(text) => setAmount(formatAmountInput(text))}
               keyboardType="decimal-pad"
               style={styles.amountInput}
               placeholder="0.00"
+              placeholderTextColor={theme.colors.onSurfaceVariant}
               textAlign="center"
               mode="flat"
               underlineColor="transparent"
               activeUnderlineColor="transparent"
+              autoFocus
             />
           </Surface>
 
           {/* Description Input */}
           <TextInput
-            label="Description"
+            label="Description *"
             value={description}
             onChangeText={setDescription}
             style={styles.input}
             mode="outlined"
+            placeholder="What was this for?"
           />
+
+          {/* Date Selection */}
+          <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+            <TextInput
+              label="Date"
+              value={format(date, 'MMM d, yyyy')}
+              style={styles.input}
+              mode="outlined"
+              editable={false}
+              right={<TextInput.Icon icon="calendar" />}
+            />
+          </TouchableOpacity>
 
           {/* Category Selection */}
           <Menu
             visible={categoryMenuVisible}
             onDismiss={() => setCategoryMenuVisible(false)}
             anchor={
-              <TextInput
-                label="Category"
-                value={capitalizeFirst(category)}
-                style={styles.input}
-                mode="outlined"
-                editable={false}
-                right={<TextInput.Icon icon="chevron-down" onPress={() => setCategoryMenuVisible(true)} />}
-                onPressIn={() => setCategoryMenuVisible(true)}
-              />
+              <TouchableOpacity onPress={() => setCategoryMenuVisible(true)}>
+                <View style={styles.categorySelector}>
+                  <Text style={[styles.categoryLabel, { color: theme.colors.onSurfaceVariant }]}>
+                    Category
+                  </Text>
+                  <View style={styles.categoryValue}>
+                    <Text style={{ fontSize: 24, marginRight: 8 }}>
+                      {getCategoryIcon(category)}
+                    </Text>
+                    <Text variant="bodyLarge">{capitalizeFirst(category)}</Text>
+                    <IconButton icon="chevron-down" size={20} />
+                  </View>
+                </View>
+              </TouchableOpacity>
             }
           >
             {CATEGORIES.map((cat) => (
@@ -221,7 +234,7 @@ const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({ navigation 
                   setCategory(cat);
                   setCategoryMenuVisible(false);
                 }}
-                title={capitalizeFirst(cat)}
+                title={`${getCategoryIcon(cat)} ${capitalizeFirst(cat)}`}
                 leadingIcon={category === cat ? 'check' : undefined}
               />
             ))}
@@ -256,53 +269,52 @@ const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({ navigation 
             ))}
           </Menu>
 
-          {/* Tags */}
-          <View style={styles.tagsContainer}>
-            <Text variant="bodyMedium" style={{ marginBottom: 8 }}>Tags</Text>
-            <View style={styles.tagsInputRow}>
-              <TextInput
-                value={tagInput}
-                onChangeText={setTagInput}
-                placeholder="Add a tag"
-                style={styles.tagInput}
-                mode="outlined"
-                dense
-                onSubmitEditing={handleAddTag}
-              />
-              <IconButton icon="plus" mode="contained" onPress={handleAddTag} />
-            </View>
-            <View style={styles.tagsList}>
-              {tags.map((tag) => (
-                <Chip
-                  key={tag}
-                  onClose={() => handleRemoveTag(tag)}
-                  style={styles.tagChip}
+          {/* Notes Input */}
+          <TextInput
+            label="Notes (Optional)"
+            value={notes}
+            onChangeText={setNotes}
+            style={styles.input}
+            mode="outlined"
+            multiline
+            numberOfLines={3}
+            placeholder="Add any additional details..."
+          />
+
+          {/* Receipt Section */}
+          <Surface style={styles.receiptSection} elevation={0}>
+            <Text variant="bodyMedium" style={{ marginBottom: 12 }}>
+              Receipt Photo (Optional)
+            </Text>
+            
+            {receiptImage ? (
+              <View style={styles.receiptPreview}>
+                <Surface style={styles.receiptPlaceholder}>
+                  <IconButton icon="receipt" size={48} iconColor={theme.colors.primary} />
+                  <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
+                    Receipt attached
+                  </Text>
+                </Surface>
+                <Button
+                  mode="text"
+                  onPress={handleRemoveReceipt}
+                  textColor={theme.colors.error}
+                  style={{ marginTop: 8 }}
                 >
-                  {tag}
-                </Chip>
-              ))}
-            </View>
-          </View>
-
-          {/* Receipt Scanner Button */}
-          <Button
-            mode="outlined"
-            onPress={handleScanReceipt}
-            icon="camera"
-            style={styles.receiptButton}
-          >
-            Scan Receipt
-          </Button>
-
-          {/* Location Button */}
-          <Button
-            mode="outlined"
-            onPress={handleGetLocation}
-            icon={location ? 'map-marker-check' : 'map-marker'}
-            style={styles.locationButton}
-          >
-            {location ? 'Location Added' : 'Add Location'}
-          </Button>
+                  Remove Receipt
+                </Button>
+              </View>
+            ) : (
+              <Button
+                mode="outlined"
+                onPress={handleAddReceipt}
+                icon="camera"
+                style={styles.receiptButton}
+              >
+                Add Receipt Photo
+              </Button>
+            )}
+          </Surface>
 
           {error && (
             <HelperText type="error" visible={true}>
@@ -315,7 +327,7 @@ const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({ navigation 
             mode="contained"
             onPress={handleSave}
             loading={isLoading}
-            disabled={isLoading}
+            disabled={isLoading || !amount || !description}
             style={styles.saveButton}
             contentStyle={styles.buttonContent}
           >
@@ -323,6 +335,47 @@ const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({ navigation 
           </Button>
         </ScrollView>
       </KeyboardAvoidingView>
+
+      {/* Date Picker Modal (simplified) */}
+      <Portal>
+        <Modal
+          visible={showDatePicker}
+          onDismiss={() => setShowDatePicker(false)}
+          contentContainerStyle={styles.datePickerModal}
+        >
+          <Surface style={styles.datePickerContent}>
+            <Text variant="titleMedium" style={{ marginBottom: 16 }}>
+              Select Date
+            </Text>
+            <Text variant="bodyLarge" style={{ marginBottom: 24 }}>
+              {format(date, 'MMMM d, yyyy')}
+            </Text>
+            <View style={styles.dateQuickButtons}>
+              <Button mode="text" onPress={() => { setDate(new Date()); setShowDatePicker(false); }}>
+                Today
+              </Button>
+              <Button
+                mode="text"
+                onPress={() => {
+                  const yesterday = new Date();
+                  yesterday.setDate(yesterday.getDate() - 1);
+                  setDate(yesterday);
+                  setShowDatePicker(false);
+                }}
+              >
+                Yesterday
+              </Button>
+            </View>
+            <Button
+              mode="contained"
+              onPress={() => setShowDatePicker(false)}
+              style={{ marginTop: 16 }}
+            >
+              Done
+            </Button>
+          </Surface>
+        </Modal>
+      </Portal>
     </SafeAreaView>
   );
 };
@@ -344,52 +397,72 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 24,
+    marginBottom: 32,
+    paddingVertical: 16,
   },
   currencySymbol: {
     fontWeight: 'bold',
-    marginRight: 8,
+    fontSize: 40,
   },
   amountInput: {
     fontSize: 48,
-    width: 200,
+    width: 220,
     backgroundColor: 'transparent',
     fontWeight: 'bold',
   },
   input: {
     marginBottom: 16,
   },
-  tagsContainer: {
+  categorySelector: {
     marginBottom: 16,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.2)',
+    borderRadius: 8,
   },
-  tagsInputRow: {
+  categoryLabel: {
+    fontSize: 12,
+    marginBottom: 4,
+  },
+  categoryValue: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  tagInput: {
-    flex: 1,
-    marginRight: 8,
-  },
-  tagsList: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginTop: 8,
-    gap: 8,
-  },
-  tagChip: {
-    marginRight: 8,
+  receiptSection: {
+    marginVertical: 16,
+    padding: 16,
   },
   receiptButton: {
-    marginBottom: 12,
+    borderStyle: 'dashed',
+    borderWidth: 1,
   },
-  locationButton: {
-    marginBottom: 24,
+  receiptPreview: {
+    alignItems: 'center',
+  },
+  receiptPlaceholder: {
+    width: 200,
+    height: 120,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 8,
   },
   saveButton: {
-    marginTop: 8,
+    marginTop: 24,
   },
   buttonContent: {
     paddingVertical: 8,
+  },
+  datePickerModal: {
+    padding: 20,
+  },
+  datePickerContent: {
+    padding: 24,
+    borderRadius: 16,
+    alignItems: 'center',
+  },
+  dateQuickButtons: {
+    flexDirection: 'row',
+    gap: 16,
   },
 });
 

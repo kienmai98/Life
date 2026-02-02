@@ -12,6 +12,7 @@ import {
   Dialog,
   Portal,
   ActivityIndicator,
+  Banner,
 } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -86,6 +87,15 @@ const ProfileScreen: React.FC = () => {
     Linking.openURL('mailto:support@life-app.example.com');
   };
 
+  const handleExportData = () => {
+    // Export transactions to CSV
+    Alert.alert(
+      'Export Data',
+      'This will export your transaction data as a CSV file. This feature is coming soon!',
+      [{ text: 'OK' }]
+    );
+  };
+
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -96,6 +106,7 @@ const ProfileScreen: React.FC = () => {
             label={(user?.displayName || user?.email || 'U').charAt(0).toUpperCase()}
             style={{ backgroundColor: theme.colors.primary, marginBottom: 16 }}
           />
+          
           <Text variant="headlineSmall" style={{ fontWeight: '600' }}>
             {user?.displayName || 'User'}
           </Text>
@@ -145,15 +156,15 @@ const ProfileScreen: React.FC = () => {
         <Divider style={styles.divider} />
 
         {/* Data Section */}
-        <List.Section title="Data">
+        <List.Section title="Your Data">
           <List.Item
-            title="Sync Now"
+            title="Sync to Cloud"
             description={
               syncStatus.lastSync
                 ? `Last synced: ${new Date(syncStatus.lastSync).toLocaleString()}`
-                : 'Sync your data with the cloud'
+                : 'Keep your data backed up'
             }
-            left={(props) => <List.Icon {...props} icon="sync" />}
+            left={(props) => <List.Icon {...props} icon="cloud-sync" />}
             right={() =>
               isSyncing ? (
                 <ActivityIndicator size="small" />
@@ -167,6 +178,14 @@ const ProfileScreen: React.FC = () => {
           />
 
           <List.Item
+            title="Export Transactions"
+            description="Download your data as CSV"
+            left={(props) => <List.Icon {...props} icon="download" />}
+            right={(props) => <List.Icon {...props} icon="chevron-right" />}
+            onPress={handleExportData}
+          />
+
+          <List.Item
             title="Google Calendar"
             description="Manage calendar integration"
             left={(props) => <List.Icon {...props} icon="calendar-sync" />}
@@ -175,17 +194,29 @@ const ProfileScreen: React.FC = () => {
               // Navigate to calendar settings
             }}
           />
-
-          <List.Item
-            title="Export Data"
-            description="Download your data as CSV"
-            left={(props) => <List.Icon {...props} icon="download" />}
-            right={(props) => <List.Icon {...props} icon="chevron-right" />}
-            onPress={() => {
-              // Export data functionality
-            }}
-          />
         </List.Section>
+
+        <Divider style={styles.divider} />
+
+        {/* Premium Features Teaser */}
+        <Surface style={styles.premiumCard} elevation={1}>
+          <View style={styles.premiumContent}>
+            <Text variant="titleMedium" style={{ fontWeight: '600', marginBottom: 4 }}>
+              ✨ Coming Soon
+            </Text>
+            <Text variant="bodyMedium" style={{ color: theme.colors.onSurfaceVariant, marginBottom: 12 }}>
+              Bank connection, CSV import, and more advanced features are in development.
+            </Text>
+            <Button
+              mode="outlined"
+              onPress={() => {
+                Alert.alert('Coming Soon', 'Premium features will be available in a future update!');
+              }}
+            >
+              Get Notified
+            </Button>
+          </View>
+        </Surface>
 
         <Divider style={styles.divider} />
 
@@ -214,7 +245,7 @@ const ProfileScreen: React.FC = () => {
 
           <List.Item
             title="App Version"
-            description="1.0.0 (Build 1)"
+            description="1.0.0 (MVP)"
             left={(props) => <List.Icon {...props} icon="information" />}
           />
         </List.Section>
@@ -274,6 +305,13 @@ const styles = StyleSheet.create({
   },
   divider: {
     marginHorizontal: 16,
+  },
+  premiumCard: {
+    margin: 16,
+    borderRadius: 12,
+  },
+  premiumContent: {
+    padding: 16,
   },
   signOutButton: {
     margin: 16,

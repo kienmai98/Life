@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { View, StyleSheet, FlatList, RefreshControl, TouchableOpacity } from 'react-native';
-import { Text, Card, FAB, Chip, useTheme, IconButton, Menu, SegmentedButtons, Divider, Avatar } from 'react-native-paper';
+import { Text, Card, FAB, Chip, useTheme, IconButton, Menu, SegmentedButtons, Divider, Avatar, Button } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -13,7 +13,7 @@ import { Transaction, TransactionCategory } from '../../types';
 
 const TransactionsScreen: React.FC = () => {
   const theme = useTheme();
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<any>>();
   const { user } = useAuthStore();
   const { transactions, fetchTransactions, isLoading } = useTransactionStore();
 
@@ -72,9 +72,27 @@ const TransactionsScreen: React.FC = () => {
           <Text variant="bodyLarge" numberOfLines={1}>
             {item.description}
           </Text>
-          <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
-            {capitalizeFirst(item.category)} • {format(new Date(item.date), 'MMM d, yyyy')}
-          </Text>
+          <View style={styles.transactionMeta}>
+            <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
+              {capitalizeFirst(item.category)}
+            </Text>
+            <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant, marginHorizontal: 4 }}>
+              •
+            </Text>
+            <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
+              {format(new Date(item.date), 'MMM d')}
+            </Text>
+            {item.receiptUrl && (
+              <>
+                <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant, marginHorizontal: 4 }}>
+                  •
+                </Text>
+                <Text variant="bodySmall" style={{ color: theme.colors.primary }}>
+                  🧾
+                </Text>
+              </>
+            )}
+          </View>
         </View>
 
         <Text
@@ -101,10 +119,10 @@ const TransactionsScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      {/* Summary Cards */}
+      {/* Header Summary */}
       <View style={styles.summaryContainer}>
-        <Card style={[styles.summaryCard, { flex: 1 }]}>
-          <Card.Content>
+        <Card style={[styles.summaryCard, { flex: 1, borderColor: theme.colors.secondary + '40' }]} mode="outlined">
+          <Card.Content style={styles.summaryContent}>
             <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
               Income
             </Text>
@@ -117,8 +135,8 @@ const TransactionsScreen: React.FC = () => {
           </Card.Content>
         </Card>
 
-        <Card style={[styles.summaryCard, { flex: 1 }]}>
-          <Card.Content>
+        <Card style={[styles.summaryCard, { flex: 1, borderColor: theme.colors.error + '40' }]} mode="outlined">
+          <Card.Content style={styles.summaryContent}>
             <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
               Expenses
             </Text>
@@ -143,6 +161,7 @@ const TransactionsScreen: React.FC = () => {
             { value: 'expense', label: 'Expenses' },
           ]}
           style={styles.segmentedButtons}
+          density="small"
         />
 
         <Menu
@@ -169,7 +188,7 @@ const TransactionsScreen: React.FC = () => {
               setSelectedCategory('food');
               setMenuVisible(false);
             }}
-            title="Food"
+            title={`${getCategoryIcon('food')} Food`}
             leadingIcon={selectedCategory === 'food' ? 'check' : undefined}
           />
           <Menu.Item
@@ -177,7 +196,7 @@ const TransactionsScreen: React.FC = () => {
               setSelectedCategory('transport');
               setMenuVisible(false);
             }}
-            title="Transport"
+            title={`${getCategoryIcon('transport')} Transport`}
             leadingIcon={selectedCategory === 'transport' ? 'check' : undefined}
           />
           <Menu.Item
@@ -185,15 +204,23 @@ const TransactionsScreen: React.FC = () => {
               setSelectedCategory('shopping');
               setMenuVisible(false);
             }}
-            title="Shopping"
+            title={`${getCategoryIcon('shopping')} Shopping`}
             leadingIcon={selectedCategory === 'shopping' ? 'check' : undefined}
+          />
+          <Menu.Item
+            onPress={() => {
+              setSelectedCategory('utilities');
+              setMenuVisible(false);
+            }}
+            title={`${getCategoryIcon('utilities')} Bills & Utilities`}
+            leadingIcon={selectedCategory === 'utilities' ? 'check' : undefined}
           />
           <Menu.Item
             onPress={() => {
               setSelectedCategory('entertainment');
               setMenuVisible(false);
             }}
-            title="Entertainment"
+            title={`${getCategoryIcon('entertainment')} Entertainment`}
             leadingIcon={selectedCategory === 'entertainment' ? 'check' : undefined}
           />
         </Menu>
@@ -222,24 +249,35 @@ const TransactionsScreen: React.FC = () => {
         }
         ListEmptyComponent={
           <View style={styles.emptyState}>
-            <Text variant="headlineSmall" style={{ marginBottom: 8 }}>
+            <View style={styles.emptyIcon}>
+              <Text style={{ fontSize: 64 }}>💰</Text>
+            </View>
+            <Text variant="headlineSmall" style={{ marginBottom: 8, fontWeight: '600' }}>
               No transactions yet
             </Text>
-            <Text variant="bodyMedium" style={{ color: theme.colors.onSurfaceVariant }}>
+            <Text variant="bodyMedium" style={{ color: theme.colors.onSurfaceVariant, textAlign: 'center', marginBottom: 24 }}>
               Tap the + button to add your first transaction
             </Text>
+            <Button
+              mode="contained"
+              onPress={() => navigation.navigate('AddTransaction')}
+              icon="plus"
+            >
+              Add Transaction
+            </Button>
           </View>
         }
-        contentContainerStyle={styles.listContent}
+        contentContainerStyle={[
+          styles.listContent,
+          filteredTransactions.length === 0 && styles.emptyListContent,
+        ]}
       />
 
       <FAB
         icon="plus"
         style={[styles.fab, { backgroundColor: theme.colors.primary }]}
-        onPress={() => {
-          // Navigate to AddTransaction screen
-          // navigation.navigate('AddTransaction');
-        }}
+        onPress={() => navigation.navigate('AddTransaction')}
+        label="Add"
       />
     </SafeAreaView>
   );
@@ -256,6 +294,10 @@ const styles = StyleSheet.create({
   },
   summaryCard: {
     flex: 1,
+  },
+  summaryContent: {
+    padding: 12,
+    alignItems: 'center',
   },
   filtersContainer: {
     flexDirection: 'row',
@@ -275,6 +317,9 @@ const styles = StyleSheet.create({
   },
   listContent: {
     padding: 16,
+  },
+  emptyListContent: {
+    flexGrow: 1,
   },
   transactionCard: {
     marginBottom: 8,
@@ -298,13 +343,22 @@ const styles = StyleSheet.create({
   transactionInfo: {
     flex: 1,
   },
+  transactionMeta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 2,
+  },
   amount: {
     fontWeight: 'bold',
   },
   emptyState: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 48,
+  },
+  emptyIcon: {
+    marginBottom: 16,
   },
   fab: {
     position: 'absolute',
