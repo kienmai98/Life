@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Life App - Preview</title>
+    <title>Life App - Black & White</title>
     <style>
         * {
             margin: 0;
@@ -13,20 +13,19 @@
         }
 
         :root {
-            --primary: #007AFF;
-            --success: #34C759;
-            --danger: #FF3B30;
-            --warning: #FF9500;
-            --bg: #f5f5f5;
-            --card: #ffffff;
-            --text: #1a1a1a;
-            --text-secondary: #666666;
-            --border: #e0e0e0;
+            --black: #000000;
+            --white: #ffffff;
+            --gray-100: #f5f5f5;
+            --gray-200: #e0e0e0;
+            --gray-300: #c0c0c0;
+            --gray-400: #888888;
+            --gray-500: #555555;
+            --gray-600: #333333;
         }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #222;
+            background: var(--black);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -37,17 +36,18 @@
         .phone-frame {
             width: 375px;
             height: 812px;
-            background: #1a1a1a;
+            background: var(--black);
             border-radius: 50px;
             padding: 15px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.8);
             position: relative;
+            border: 2px solid var(--gray-600);
         }
 
         .phone-screen {
             width: 100%;
             height: 100%;
-            background: var(--bg);
+            background: var(--white);
             border-radius: 40px;
             overflow: hidden;
             position: relative;
@@ -60,7 +60,7 @@
             transform: translateX(-50%);
             width: 150px;
             height: 35px;
-            background: #1a1a1a;
+            background: var(--black);
             border-bottom-left-radius: 20px;
             border-bottom-right-radius: 20px;
             z-index: 100;
@@ -77,7 +77,7 @@
             padding: 0 30px;
             font-size: 14px;
             font-weight: 600;
-            color: var(--text);
+            color: var(--black);
             z-index: 99;
         }
 
@@ -94,7 +94,7 @@
             flex-direction: column;
             justify-content: center;
             padding: 40px 30px;
-            background: white;
+            background: var(--white);
         }
 
         .auth-header {
@@ -105,13 +105,14 @@
         .auth-title {
             font-size: 32px;
             font-weight: bold;
-            color: var(--text);
+            color: var(--black);
             margin-bottom: 8px;
+            letter-spacing: -1px;
         }
 
         .auth-subtitle {
             font-size: 16px;
-            color: var(--text-secondary);
+            color: var(--gray-500);
         }
 
         .form {
@@ -121,32 +122,47 @@
         }
 
         .input {
-            border: 1px solid var(--border);
-            border-radius: 12px;
+            border: 2px solid var(--black);
+            border-radius: 0;
             padding: 16px;
             font-size: 16px;
-            background: #f9f9f9;
+            background: var(--white);
             font-family: inherit;
+            color: var(--black);
+        }
+
+        .input::placeholder {
+            color: var(--gray-400);
         }
 
         .btn {
-            border-radius: 12px;
+            border-radius: 0;
             padding: 16px;
             font-size: 16px;
             font-weight: 600;
-            border: none;
+            border: 2px solid var(--black);
             cursor: pointer;
-            transition: opacity 0.2s;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .btn-primary {
-            background: var(--primary);
-            color: white;
+            background: var(--black);
+            color: var(--white);
         }
 
-        .btn-success {
-            background: var(--success);
-            color: white;
+        .btn-primary:hover {
+            background: var(--gray-600);
+        }
+
+        .btn-secondary {
+            background: var(--white);
+            color: var(--black);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-100);
         }
 
         .btn:active {
@@ -158,9 +174,11 @@
             padding: 12px;
             background: none;
             border: none;
-            color: var(--primary);
+            color: var(--black);
             font-size: 14px;
             cursor: pointer;
+            text-decoration: underline;
+            text-underline-offset: 4px;
         }
 
         /* Main App */
@@ -169,6 +187,7 @@
             display: flex;
             flex-direction: column;
             padding-top: 50px;
+            background: var(--white);
         }
 
         .screen {
@@ -176,6 +195,7 @@
             overflow-y: auto;
             padding: 16px;
             display: none;
+            background: var(--white);
         }
 
         .screen.active {
@@ -190,36 +210,38 @@
         .greeting {
             font-size: 28px;
             font-weight: bold;
-            color: var(--text);
+            color: var(--black);
+            letter-spacing: -0.5px;
         }
 
         .date {
             font-size: 16px;
-            color: var(--text-secondary);
+            color: var(--gray-500);
             margin-top: 4px;
         }
 
         .card {
-            background: white;
-            border-radius: 16px;
+            background: var(--white);
+            border-radius: 0;
             padding: 20px;
             margin-bottom: 16px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border: 2px solid var(--black);
         }
 
         .card-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--gray-500);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 2px;
             margin-bottom: 12px;
         }
 
         .amount {
             font-size: 36px;
             font-weight: bold;
-            color: var(--text);
+            color: var(--black);
+            letter-spacing: -1px;
         }
 
         .category-item {
@@ -227,30 +249,45 @@
             align-items: center;
             gap: 8px;
             padding: 6px 0;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .category-item:last-child {
+            border-bottom: none;
         }
 
         .category-dot {
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            background: var(--primary);
+            background: var(--black);
+            border: 2px solid var(--black);
+        }
+
+        .category-dot.spent {
+            background: var(--black);
+        }
+
+        .category-dot.remaining {
+            background: var(--white);
         }
 
         .category-name {
             flex: 1;
             font-size: 14px;
-            color: #333;
+            color: var(--black);
         }
 
         .category-amount {
             font-size: 14px;
             font-weight: 600;
+            color: var(--black);
         }
 
         .event-item, .transaction-item {
             display: flex;
             padding: 12px 0;
-            border-bottom: 1px solid #f0f0f0;
+            border-bottom: 1px solid var(--gray-200);
         }
 
         .event-item:last-child, .transaction-item:last-child {
@@ -264,8 +301,10 @@
 
         .event-time-text {
             font-size: 12px;
-            font-weight: 600;
-            color: var(--primary);
+            font-weight: 700;
+            color: var(--black);
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .event-details {
@@ -274,12 +313,13 @@
 
         .event-title {
             font-size: 15px;
-            font-weight: 500;
+            font-weight: 600;
+            color: var(--black);
         }
 
         .event-location {
             font-size: 13px;
-            color: var(--text-secondary);
+            color: var(--gray-500);
             margin-top: 2px;
         }
 
@@ -289,23 +329,26 @@
 
         .transaction-desc {
             font-size: 15px;
-            font-weight: 500;
+            font-weight: 600;
+            color: var(--black);
         }
 
         .transaction-category {
             font-size: 12px;
-            color: var(--text-secondary);
+            color: var(--gray-500);
             margin-top: 2px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .transaction-amount {
             font-size: 15px;
-            font-weight: 600;
-            color: var(--danger);
+            font-weight: 700;
+            color: var(--black);
         }
 
         .empty-text {
-            color: #999;
+            color: var(--gray-400);
             font-style: italic;
             text-align: center;
             padding: 20px;
@@ -321,14 +364,23 @@
 
         .nav-arrow {
             font-size: 18px;
-            color: var(--primary);
+            color: var(--black);
             padding: 8px;
             cursor: pointer;
+            font-weight: bold;
+            border: 2px solid var(--black);
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .month-title {
             font-size: 18px;
-            font-weight: 600;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
         .week-days {
@@ -340,9 +392,11 @@
         .week-day {
             width: 40px;
             text-align: center;
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-secondary);
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .calendar-grid {
@@ -357,48 +411,54 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            border-radius: 8px;
             cursor: pointer;
             font-size: 14px;
+            border: 2px solid transparent;
+            font-weight: 500;
         }
 
         .day-cell:hover {
-            background: #f0f0f0;
+            border-color: var(--gray-300);
         }
 
         .day-cell.today {
-            border: 1px solid var(--primary);
+            border-color: var(--black);
+            font-weight: 700;
         }
 
         .day-cell.selected {
-            background: var(--primary);
-            color: white;
+            background: var(--black);
+            color: var(--white);
+            border-color: var(--black);
+            font-weight: 700;
         }
 
         .day-cell.other-month {
-            color: #ccc;
+            color: var(--gray-300);
         }
 
         .event-dot {
             width: 4px;
             height: 4px;
             border-radius: 50%;
-            background: var(--danger);
+            background: var(--black);
             margin-top: 2px;
         }
 
         .events-section {
             margin-top: 16px;
             padding: 16px;
-            background: white;
-            border-radius: 16px;
+            background: var(--white);
+            border: 2px solid var(--black);
             margin-bottom: 80px;
         }
 
         .events-title {
-            font-size: 16px;
-            font-weight: 600;
+            font-size: 14px;
+            font-weight: 700;
             margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         /* Transactions */
@@ -412,17 +472,19 @@
         .trans-title {
             font-size: 28px;
             font-weight: bold;
+            letter-spacing: -1px;
         }
 
         .add-btn {
-            background: var(--primary);
-            color: white;
+            background: var(--black);
+            color: var(--white);
             padding: 8px 16px;
-            border-radius: 20px;
             font-size: 14px;
-            font-weight: 600;
-            border: none;
+            font-weight: 700;
+            border: 2px solid var(--black);
             cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .month-selector {
@@ -434,21 +496,25 @@
         }
 
         .summary-card {
-            background: white;
+            background: var(--white);
             padding: 20px;
-            border-radius: 16px;
+            border: 2px solid var(--black);
             margin-bottom: 16px;
         }
 
         .summary-label {
-            font-size: 14px;
-            color: var(--text-secondary);
+            font-size: 12px;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 700;
         }
 
         .summary-amount {
             font-size: 32px;
             font-weight: bold;
             margin: 4px 0 16px;
+            letter-spacing: -1px;
         }
 
         .category-chips {
@@ -461,38 +527,43 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            background: #f5f5f5;
+            background: var(--white);
             padding: 6px 12px;
-            border-radius: 16px;
+            border: 2px solid var(--black);
             font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .chip-dot {
             width: 8px;
             height: 8px;
             border-radius: 50%;
+            background: var(--black);
         }
 
         .transaction-card {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: white;
+            background: var(--white);
             padding: 16px;
-            border-radius: 12px;
+            border: 2px solid var(--black);
             margin-bottom: 8px;
         }
 
         .trans-icon {
             width: 40px;
             height: 40px;
-            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
+            color: var(--white);
             font-weight: bold;
             margin-right: 12px;
+            background: var(--black);
+            border: 2px solid var(--black);
         }
 
         .trans-left {
@@ -503,13 +574,15 @@
 
         .trans-info h4 {
             font-size: 15px;
-            font-weight: 500;
+            font-weight: 700;
         }
 
         .trans-info p {
-            font-size: 12px;
-            color: var(--text-secondary);
+            font-size: 11px;
+            color: var(--gray-500);
             margin-top: 2px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         /* Profile */
@@ -522,33 +595,34 @@
         .avatar {
             width: 80px;
             height: 80px;
-            border-radius: 50%;
-            background: var(--primary);
+            background: var(--black);
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto 12px;
-            color: white;
+            color: var(--white);
             font-size: 32px;
             font-weight: bold;
+            border: 2px solid var(--black);
         }
 
         .profile-name {
             font-size: 24px;
             font-weight: bold;
+            letter-spacing: -0.5px;
         }
 
         .profile-email {
             font-size: 14px;
-            color: var(--text-secondary);
+            color: var(--gray-500);
             margin-top: 4px;
         }
 
         .stats-row {
             display: flex;
-            background: white;
+            background: var(--white);
             margin: 0 0 16px;
-            border-radius: 16px;
+            border: 2px solid var(--black);
             padding: 20px;
         }
 
@@ -558,34 +632,38 @@
         }
 
         .stat-item:nth-child(2) {
-            border-left: 1px solid #f0f0f0;
-            border-right: 1px solid #f0f0f0;
+            border-left: 2px solid var(--black);
+            border-right: 2px solid var(--black);
         }
 
         .stat-value {
             font-size: 24px;
             font-weight: bold;
+            letter-spacing: -1px;
         }
 
         .stat-label {
-            font-size: 12px;
-            color: var(--text-secondary);
+            font-size: 11px;
+            color: var(--gray-500);
             margin-top: 4px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
         }
 
         .settings-section {
-            background: white;
-            border-radius: 16px;
+            background: var(--white);
+            border: 2px solid var(--black);
             padding: 16px;
             margin-bottom: 16px;
         }
 
         .section-header {
-            font-size: 13px;
-            font-weight: 600;
-            color: #999;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--gray-500);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 2px;
             margin-bottom: 12px;
         }
 
@@ -594,7 +672,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 12px 0;
-            border-bottom: 1px solid #f5f5f5;
+            border-bottom: 1px solid var(--gray-200);
             cursor: pointer;
         }
 
@@ -614,52 +692,55 @@
 
         .setting-label {
             font-size: 16px;
+            font-weight: 500;
         }
 
         .chevron {
-            color: #ccc;
+            color: var(--gray-400);
+            font-weight: bold;
         }
 
         .switch {
             width: 50px;
             height: 30px;
-            background: #ddd;
-            border-radius: 15px;
+            background: var(--white);
+            border: 2px solid var(--black);
             position: relative;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: all 0.3s;
         }
 
         .switch.active {
-            background: var(--primary);
+            background: var(--black);
         }
 
         .switch::after {
             content: '';
             position: absolute;
-            width: 26px;
-            height: 26px;
-            background: white;
-            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            background: var(--black);
             top: 2px;
             left: 2px;
-            transition: transform 0.3s;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: all 0.3s;
         }
 
         .switch.active::after {
-            transform: translateX(20px);
+            background: var(--white);
+            left: 24px;
         }
 
         .logout-btn {
-            background: var(--danger);
-            color: white;
+            background: var(--black);
+            color: var(--white);
             padding: 16px;
-            border-radius: 12px;
             text-align: center;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
             margin-top: 8px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border: 2px solid var(--black);
         }
 
         /* Tab Bar */
@@ -668,8 +749,8 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: white;
-            border-top: 1px solid #f0f0f0;
+            background: var(--white);
+            border-top: 2px solid var(--black);
             display: flex;
             justify-content: space-around;
             padding: 10px 0 30px;
@@ -683,7 +764,7 @@
             gap: 4px;
             padding: 4px 12px;
             cursor: pointer;
-            opacity: 0.5;
+            opacity: 0.4;
             transition: opacity 0.2s;
         }
 
@@ -693,10 +774,14 @@
 
         .tab-icon {
             font-size: 24px;
+            filter: grayscale(100%);
         }
 
         .tab-label {
-            font-size: 11px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         /* Add Transaction Modal */
@@ -706,7 +791,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0,0,0,0.8);
             display: none;
             justify-content: flex-end;
             z-index: 200;
@@ -717,14 +802,15 @@
         }
 
         .modal-content {
-            background: white;
+            background: var(--white);
             width: 100%;
             max-width: 375px;
             height: 90%;
-            border-radius: 24px 24px 0 0;
+            border-radius: 0;
             padding: 20px;
             overflow-y: auto;
             animation: slideUp 0.3s ease;
+            border-top: 2px solid var(--black);
         }
 
         @keyframes slideUp {
@@ -738,41 +824,49 @@
             align-items: center;
             margin-bottom: 24px;
             padding-bottom: 16px;
-            border-bottom: 1px solid #f0f0f0;
+            border-bottom: 2px solid var(--black);
         }
 
         .modal-title {
-            font-size: 17px;
-            font-weight: 600;
+            font-size: 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
         .cancel-btn {
-            color: var(--text-secondary);
+            color: var(--gray-500);
             background: none;
             border: none;
-            font-size: 16px;
+            font-size: 14px;
             cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
         }
 
         .save-btn {
-            color: var(--primary);
+            color: var(--black);
             background: none;
             border: none;
-            font-size: 16px;
-            font-weight: 600;
+            font-size: 14px;
+            font-weight: 700;
             cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .amount-input-section {
             text-align: center;
             padding: 32px 0;
-            border-bottom: 1px solid #f0f0f0;
+            border-bottom: 2px solid var(--black);
             margin-bottom: 24px;
         }
 
         .amount-display {
             font-size: 48px;
             font-weight: 300;
+            letter-spacing: -2px;
         }
 
         .input-group {
@@ -780,11 +874,11 @@
         }
 
         .input-label {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-secondary);
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--gray-500);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 2px;
             margin-bottom: 8px;
             display: block;
         }
@@ -798,29 +892,41 @@
 
         .category-option {
             padding: 10px 16px;
-            border-radius: 20px;
-            background: #f5f5f5;
-            border: 2px solid transparent;
+            background: var(--white);
+            border: 2px solid var(--black);
             white-space: nowrap;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .category-option.selected {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
+            background: var(--black);
+            color: var(--white);
         }
 
         .camera-btn {
-            border: 2px dashed var(--primary);
-            border-radius: 12px;
+            border: 2px dashed var(--black);
             padding: 20px;
             text-align: center;
-            color: var(--primary);
-            font-weight: 500;
+            color: var(--black);
+            font-weight: 700;
             cursor: pointer;
             margin-top: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .footer {
+            align-items: center;
+            padding: 20px;
+            text-align: center;
+            color: var(--gray-400);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
         /* Web preview hint */
@@ -829,12 +935,15 @@
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(0,0,0,0.8);
-            color: white;
+            background: var(--white);
+            color: var(--black);
             padding: 12px 24px;
-            border-radius: 24px;
-            font-size: 14px;
+            font-size: 12px;
             z-index: 1000;
+            border: 2px solid var(--black);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 700;
         }
 
         @media (max-width: 500px) {
@@ -843,6 +952,7 @@
                 height: 100vh;
                 border-radius: 0;
                 padding: 0;
+                border: none;
             }
             .phone-screen {
                 border-radius: 0;
@@ -859,36 +969,36 @@
             <div class="notch"></div>
             <div class="status-bar">
                 <span id="clock">9:41</span>
-                <span>📶 5G 🔋</span>
+                <span>◉ 5G ▮▮▮</span>
             </div>
 
             <div class="app-container" id="app">
                 <!-- Auth Screen -->
                 <div class="auth-screen" id="auth-screen">
                     <div class="auth-header">
-                        <div class="auth-title">Welcome to Life</div>
-                        <div class="auth-subtitle">Manage your schedule & finances</div>
+                        <div class="auth-title">LIFE</div>
+                        <div class="auth-subtitle">Schedule & Finance</div>
                     </div>
                     <div class="form">
-                        <input type="email" class="input" placeholder="Email" value="demo@example.com">
-                        <input type="password" class="input" placeholder="Password" value="password">
-                        <button class="btn btn-primary" onclick="login()">Log In</button>
-                        <button class="link-btn" onclick="showRegister()">Don't have an account? Sign up</button>
+                        <input type="email" class="input" placeholder="EMAIL" value="demo@example.com">
+                        <input type="password" class="input" placeholder="PASSWORD" value="password">
+                        <button class="btn btn-primary" onclick="login()">ENTER</button>
+                        <button class="link-btn" onclick="showRegister()">CREATE ACCOUNT</button>
                     </div>
                 </div>
 
                 <!-- Register Screen -->
                 <div class="auth-screen" id="register-screen" style="display:none;">
                     <div class="auth-header">
-                        <div class="auth-title">Create Account</div>
-                        <div class="auth-subtitle">Start managing your life</div>
+                        <div class="auth-title">JOIN</div>
+                        <div class="auth-subtitle">Start your journey</div>
                     </div>
                     <div class="form">
-                        <input type="email" class="input" placeholder="Email">
-                        <input type="password" class="input" placeholder="Password">
-                        <input type="password" class="input" placeholder="Confirm Password">
-                        <button class="btn btn-success" onclick="login()">Sign Up</button>
-                        <button class="link-btn" onclick="showLogin()">Already have an account? Log in</button>
+                        <input type="email" class="input" placeholder="EMAIL">
+                        <input type="password" class="input" placeholder="PASSWORD">
+                        <input type="password" class="input" placeholder="CONFIRM">
+                        <button class="btn btn-primary" onclick="login()">SIGN UP</button>
+                        <button class="link-btn" onclick="showLogin()">BACK TO LOGIN</button>
                     </div>
                 </div>
 
@@ -897,74 +1007,74 @@
                     <!-- Dashboard -->
                     <div class="screen active" id="dashboard-screen">
                         <div class="dashboard-header">
-                            <div class="greeting">Hello, Demo! 👋</div>
-                            <div class="date" id="current-date">Monday, February 2nd</div>
+                            <div class="greeting">HELLO, DEMO</div>
+                            <div class="date" id="current-date">MONDAY, FEBRUARY 2</div>
                         </div>
 
                         <div class="card">
-                            <div class="card-title">This Month's Spending</div>
+                            <div class="card-title">THIS MONTH</div>
                             <div class="amount">$1,247.50</div>
                             <div class="category-item">
-                                <div class="category-dot" style="background:#FF6B6B"></div>
-                                <span class="category-name">Food & Dining</span>
+                                <div class="category-dot spent"></div>
+                                <span class="category-name">FOOD & DINING</span>
                                 <span class="category-amount">$450.00</span>
                             </div>
                             <div class="category-item">
-                                <div class="category-dot" style="background:#4ECDC4"></div>
-                                <span class="category-name">Transportation</span>
+                                <div class="category-dot spent"></div>
+                                <span class="category-name">TRANSPORTATION</span>
                                 <span class="category-amount">$320.00</span>
                             </div>
                             <div class="category-item">
-                                <div class="category-dot" style="background:#45B7D1"></div>
-                                <span class="category-name">Shopping</span>
+                                <div class="category-dot spent"></div>
+                                <span class="category-name">SHOPPING</span>
                                 <span class="category-amount">$280.50</span>
                             </div>
                         </div>
 
                         <div class="card">
-                            <div class="card-title">Upcoming Events</div>
+                            <div class="card-title">UPCOMING</div>
                             <div class="event-item">
                                 <div class="event-time">
-                                    <div class="event-time-text">Feb 3</div>
+                                    <div class="event-time-text">FEB 3</div>
                                 </div>
                                 <div class="event-details">
                                     <div class="event-title">Team Standup</div>
-                                    <div class="event-location">📍 Google Meet</div>
+                                    <div class="event-location">Google Meet</div>
                                 </div>
                             </div>
                             <div class="event-item">
                                 <div class="event-time">
-                                    <div class="event-time-text">Feb 5</div>
+                                    <div class="event-time-text">FEB 5</div>
                                 </div>
                                 <div class="event-details">
                                     <div class="event-title">Dentist Appointment</div>
-                                    <div class="event-location">📍 Downtown Clinic</div>
+                                    <div class="event-location">Downtown Clinic</div>
                                 </div>
                             </div>
                         </div>
 
                         <div class="card">
-                            <div class="card-title">Recent Transactions</div>
+                            <div class="card-title">RECENT</div>
                             <div class="transaction-item">
                                 <div class="transaction-left">
-                                    <div class="transaction-desc">Grocery Store</div>
+                                    <div class="transaction-desc">GROCERY STORE</div>
                                     <div class="transaction-category">Food & Dining</div>
                                 </div>
-                                <div class="transaction-amount">-$85.40</div>
+                                <div class="transaction-amount">−$85.40</div>
                             </div>
                             <div class="transaction-item">
                                 <div class="transaction-left">
-                                    <div class="transaction-desc">Uber Ride</div>
+                                    <div class="transaction-desc">UBER RIDE</div>
                                     <div class="transaction-category">Transportation</div>
                                 </div>
-                                <div class="transaction-amount">-$24.50</div>
+                                <div class="transaction-amount">−$24.50</div>
                             </div>
                             <div class="transaction-item">
                                 <div class="transaction-left">
-                                    <div class="transaction-desc">Netflix Subscription</div>
+                                    <div class="transaction-desc">NETFLIX</div>
                                     <div class="transaction-category">Entertainment</div>
                                 </div>
-                                <div class="transaction-amount">-$15.99</div>
+                                <div class="transaction-amount">−$15.99</div>
                             </div>
                         </div>
                     </div>
@@ -972,28 +1082,28 @@
                     <!-- Calendar -->
                     <div class="screen" id="calendar-screen">
                         <div class="calendar-header">
-                            <div class="nav-arrow" onclick="changeMonth(-1)">◀</div>
-                            <div class="month-title" id="calendar-month">February 2026</div>
-                            <div class="nav-arrow" onclick="changeMonth(1)">▶</div>
+                            <div class="nav-arrow" onclick="changeMonth(-1)"><</div>
+                            <div class="month-title" id="calendar-month">FEBRUARY 2026</div>
+                            <div class="nav-arrow" onclick="changeMonth(1)">></div>
                         </div>
                         <div class="week-days">
-                            <div class="week-day">Sun</div>
-                            <div class="week-day">Mon</div>
-                            <div class="week-day">Tue</div>
-                            <div class="week-day">Wed</div>
-                            <div class="week-day">Thu</div>
-                            <div class="week-day">Fri</div>
-                            <div class="week-day">Sat</div>
+                            <div class="week-day">SUN</div>
+                            <div class="week-day">MON</div>
+                            <div class="week-day">TUE</div>
+                            <div class="week-day">WED</div>
+                            <div class="week-day">THU</div>
+                            <div class="week-day">FRI</div>
+                            <div class="week-day">SAT</div>
                         </div>
                         <div class="calendar-grid" id="calendar-grid">
                             <!-- Generated by JS -->
                         </div>
                         <div class="events-section">
-                            <div class="events-title">Monday, February 2nd</div>
-                            <div class="empty-text">No events for this day</div>
+                            <div class="events-title">MONDAY, FEBRUARY 2</div>
+                            <div class="empty-text">No events scheduled</div>
                             <div class="input-group" style="margin-top:16px;">
-                                <input type="text" class="input" placeholder="Add a new event..." style="margin-bottom:8px;">
-                                <button class="btn btn-primary">Add Event</button>
+                                <input type="text" class="input" placeholder="Add event..." style="margin-bottom:8px;">
+                                <button class="btn btn-primary">ADD</button>
                             </div>
                         </div>
                     </div>
@@ -1001,71 +1111,71 @@
                     <!-- Transactions -->
                     <div class="screen" id="transactions-screen">
                         <div class="trans-header">
-                            <div class="trans-title">Transactions</div>
-                            <button class="add-btn" onclick="openAddTransaction()">+ Add</button>
+                            <div class="trans-title">MONEY</div>
+                            <button class="add-btn" onclick="openAddTransaction()">+ ADD</button>
                         </div>
                         <div class="month-selector">
-                            <div class="nav-arrow">◀</div>
-                            <div class="month-title">February 2026</div>
-                            <div class="nav-arrow">▶</div>
+                            <div class="nav-arrow"><</div>
+                            <div class="month-title">FEBRUARY</div>
+                            <div class="nav-arrow">></div>
                         </div>
                         <div class="summary-card">
-                            <div class="summary-label">Total Spent</div>
+                            <div class="summary-label">TOTAL SPENT</div>
                             <div class="summary-amount">$1,247.50</div>
                             <div class="category-chips">
                                 <div class="chip">
-                                    <div class="chip-dot" style="background:#FF6B6B"></div>
-                                    Food: $450
+                                    <div class="chip-dot"></div>
+                                    FOOD: $450
                                 </div>
                                 <div class="chip">
-                                    <div class="chip-dot" style="background:#4ECDC4"></div>
-                                    Transport: $320
+                                    <div class="chip-dot"></div>
+                                    TRANSPORT: $320
                                 </div>
                                 <div class="chip">
-                                    <div class="chip-dot" style="background:#45B7D1"></div>
-                                    Shopping: $280
+                                    <div class="chip-dot"></div>
+                                    SHOPPING: $280
                                 </div>
                             </div>
                         </div>
                         <div class="transaction-card">
                             <div class="trans-left">
-                                <div class="trans-icon" style="background:#FF6B6B">F</div>
+                                <div class="trans-icon">F</div>
                                 <div class="trans-info">
-                                    <h4>Grocery Store</h4>
-                                    <p>Food & Dining • Feb 1</p>
+                                    <h4>GROCERY STORE</h4>
+                                    <p>Food • Feb 1</p>
                                 </div>
                             </div>
-                            <div class="transaction-amount">-$85.40</div>
+                            <div class="transaction-amount">−$85.40</div>
                         </div>
                         <div class="transaction-card">
                             <div class="trans-left">
-                                <div class="trans-icon" style="background:#4ECDC4">T</div>
+                                <div class="trans-icon">T</div>
                                 <div class="trans-info">
-                                    <h4>Uber Ride</h4>
-                                    <p>Transportation • Feb 1</p>
+                                    <h4>UBER RIDE</h4>
+                                    <p>Transport • Feb 1</p>
                                 </div>
                             </div>
-                            <div class="transaction-amount">-$24.50</div>
+                            <div class="transaction-amount">−$24.50</div>
                         </div>
                         <div class="transaction-card">
                             <div class="trans-left">
-                                <div class="trans-icon" style="background:#DDA0DD">H</div>
+                                <div class="trans-icon">H</div>
                                 <div class="trans-info">
-                                    <h4>Gym Membership</h4>
-                                    <p>Health & Fitness • Jan 31</p>
+                                    <h4>GYM MEMBERSHIP</h4>
+                                    <p>Health • Jan 31</p>
                                 </div>
                             </div>
-                            <div class="transaction-amount">-$49.99</div>
+                            <div class="transaction-amount">−$49.99</div>
                         </div>
                         <div class="transaction-card">
                             <div class="trans-left">
-                                <div class="trans-icon" style="background:#96CEB4">E</div>
+                                <div class="trans-icon">E</div>
                                 <div class="trans-info">
-                                    <h4>Movie Tickets</h4>
+                                    <h4>MOVIE TICKETS</h4>
                                     <p>Entertainment • Jan 30</p>
                                 </div>
                             </div>
-                            <div class="transaction-amount">-$32.00</div>
+                            <div class="transaction-amount">−$32.00</div>
                         </div>
                     </div>
 
@@ -1073,87 +1183,88 @@
                     <div class="screen" id="profile-screen">
                         <div class="profile-header">
                             <div class="avatar">D</div>
-                            <div class="profile-name">Demo User</div>
+                            <div class="profile-name">DEMO USER</div>
                             <div class="profile-email">demo@example.com</div>
                         </div>
                         <div class="stats-row">
                             <div class="stat-item">
                                 <div class="stat-value">12</div>
-                                <div class="stat-label">Transactions</div>
+                                <div class="stat-label">TRANSACTIONS</div>
                             </div>
                             <div class="stat-item">
-                                <div class="stat-value">$1.2k</div>
-                                <div class="stat-label">Total Spent</div>
+                                <div class="stat-value">$1.2K</div>
+                                <div class="stat-label">SPENT</div>
                             </div>
                             <div class="stat-item">
-                                <div class="stat-value">—</div>
-                                <div class="stat-label">Calendar</div>
+                                <div class="stat-value">−</div>
+                                <div class="stat-label">CALENDAR</div>
                             </div>
                         </div>
                         <div class="settings-section">
-                            <div class="section-header">Preferences</div>
+                            <div class="section-header">PREFERENCES</div>
                             <div class="setting-item">
                                 <div class="setting-left">
-                                    <span class="setting-icon">🌙</span>
-                                    <span class="setting-label">Dark Mode</span>
+                                    <span class="setting-icon">◐</span>
+                                    <span class="setting-label">DARK MODE</span>
                                 </div>
                                 <div class="switch" id="darkModeSwitch" onclick="toggleDarkMode()"></div>
                             </div>
                             <div class="setting-item">
                                 <div class="setting-left">
-                                    <span class="setting-icon">📅</span>
+                                    <span class="setting-icon">⊕</span>
                                     <div>
-                                        <div class="setting-label">Google Calendar</div>
-                                        <div style="font-size:12px;color:#999">Not connected</div>
+                                        <div class="setting-label">GOOGLE CALENDAR</div>
+                                        <div style="font-size:11px;color:#888;text-transform:uppercase;">Not Connected</div>
                                     </div>
                                 </div>
-                                <span class="chevron">▶</span>
+                                <span class="chevron">></span>
                             </div>
                         </div>
                         <div class="settings-section">
-                            <div class="section-header">Account</div>
+                            <div class="section-header">ACCOUNT</div>
                             <div class="setting-item">
                                 <div class="setting-left">
-                                    <span class="setting-icon">🔐</span>
-                                    <span class="setting-label">Change Password</span>
+                                    <span class="setting-icon">◎</span>
+                                    <span class="setting-label">PASSWORD</span>
                                 </div>
-                                <span class="chevron">▶</span>
+                                <span class="chevron">></span>
                             </div>
                             <div class="setting-item">
                                 <div class="setting-left">
-                                    <span class="setting-icon">🔔</span>
-                                    <span class="setting-label">Notifications</span>
+                                    <span class="setting-icon">⚯</span>
+                                    <span class="setting-label">NOTIFICATIONS</span>
                                 </div>
-                                <span class="chevron">▶</span>
+                                <span class="chevron">></span>
                             </div>
                             <div class="setting-item">
                                 <div class="setting-left">
-                                    <span class="setting-icon">💾</span>
-                                    <span class="setting-label">Export Data</span>
+                                    <span class="setting-icon">⧉</span>
+                                    <span class="setting-label">EXPORT DATA</span>
                                 </div>
-                                <span class="chevron">▶</span>
+                                <span class="chevron">></span>
                             </div>
                         </div>
-                        <div class="logout-btn" onclick="logout()">Log Out</div>
+                        <div class="logout-btn" onclick="logout()">LOG OUT</div>
+                        <div class="footer">LIFE APP ◼︎ 2026</div>
                     </div>
 
                     <!-- Tab Bar -->
                     <div class="tab-bar">
                         <div class="tab active" onclick="switchTab('dashboard')">
-                            <span class="tab-icon">🏠</span>
-                            <span class="tab-label">Home</span>
+                            <span class="tab-icon">□</span>
+                            <span class="tab-label">HOME</span>
                         </div>
                         <div class="tab" onclick="switchTab('calendar')">
-                            <span class="tab-icon">📅</span>
-                            <span class="tab-label">Calendar</span>
+                            <span class="tab-icon">◫</span>
+                            <span class="tab-label">PLAN</span>
                         </div>
                         <div class="tab" onclick="switchTab('transactions')">
-                            <span class="tab-icon">💰</span>
-                            <span class="tab-label">Money</span>
+                            <span class="tab-icon">◫</span>
+                            <span class="tab-label">MONEY</span>
                         </div>
                         <div class="tab" onclick="switchTab('profile')">
-                            <span class="tab-icon">👤</span>
-                            <span class="tab-label">Profile</span>
+                            <span class="tab-icon">○</span>
+                            <span class="tab-label">ME</span>
                         </div>
                     </div>
                 </div>
@@ -1165,40 +1276,38 @@
     <div class="modal-overlay" id="addTransactionModal">
         <div class="modal-content">
             <div class="modal-header">
-                <button class="cancel-btn" onclick="closeAddTransaction()">Cancel</button>
-                <div class="modal-title">Add Transaction</div>
-                <button class="save-btn" onclick="saveTransaction()">Save</button>
+                <button class="cancel-btn" onclick="closeAddTransaction()">CANCEL</button>
+                <div class="modal-title">NEW ENTRY</div>
+                <button class="save-btn" onclick="saveTransaction()">SAVE</button>
             </div>
             <div class="amount-input-section">
                 <div class="amount-display">$0.00</div>
             </div>
             <div class="input-group">
-                <label class="input-label">Description</label>
+                <label class="input-label">DESCRIPTION</label>
                 <input type="text" class="input" placeholder="What did you spend on?" id="transDesc">
             </div>
             <div class="input-group">
-                <label class="input-label">Category</label>
+                <label class="input-label">CATEGORY</label>
                 <div class="category-select">
-                    <div class="category-option selected">Food & Dining</div>
-                    <div class="category-option">Transportation</div>
-                    <div class="category-option">Shopping</div>
-                    <div class="category-option">Entertainment</div>
-                    <div class="category-option">Bills</div>
+                    <div class="category-option selected">FOOD</div>
+                    <div class="category-option">TRANSPORT</div>
+                    <div class="category-option">SHOPPING</div>
+                    <div class="category-option">BILLS</div>
+                    <div class="category-option">OTHER</div>
                 </div>
             </div>
             <div class="input-group">
-                <label class="input-label">Date</label>
+                <label class="input-label">DATE</label>
                 <input type="date" class="input" value="2026-02-02">
             </div>
             <div class="input-group">
-                <label class="input-label">Notes (Optional)</label>
-                <textarea class="input" rows="3" placeholder="Add any additional details..."></textarea>
+                <label class="input-label">NOTES</label>
+                <textarea class="input" rows="3" placeholder="Additional details..."></textarea>
             </div>
-            <div class="camera-btn">📷 Attach Receipt</div>
+            <div class="camera-btn">◫ ATTACH RECEIPT</div>
         </div>
     </div>
-
-    <div class="preview-hint">Web Preview • Click tabs to navigate</div>
 
     <script>
         // Clock
@@ -1215,7 +1324,7 @@
 
         // Date
         const dateOptions = { weekday: 'long', month: 'long', day: 'numeric' };
-        document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', dateOptions);
+        document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', dateOptions).toUpperCase();
 
         // Auth
         function login() {
@@ -1265,7 +1374,7 @@
             const year = currentMonth.getFullYear();
             const month = currentMonth.getMonth();
             
-            monthTitle.textContent = currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+            monthTitle.textContent = currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }).toUpperCase();
             
             const firstDay = new Date(year, month, 1).getDay();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -1273,13 +1382,13 @@
             
             let html = '';
             
-            // Empty cells for days before month starts
+            // Empty cells
             for (let i = 0; i < firstDay; i++) {
                 html += '<div class="day-cell other-month"></div>';
             }
             
             // Days
-            const events = [3, 5, 12, 18, 25]; // Demo events
+            const events = [3, 5, 12, 18, 25];
             
             for (let day = 1; day <= daysInMonth; day++) {
                 const isToday = today.getDate() === day && today.getMonth() === month;
@@ -1311,10 +1420,9 @@
 
         function saveTransaction() {
             closeAddTransaction();
-            // Demo: would save in real app
         }
 
-        // Category selection in modal
+        // Category selection
         document.querySelectorAll('.category-option').forEach(opt => {
             opt.addEventListener('click', function() {
                 document.querySelectorAll('.category-option').forEach(o => o.classList.remove('selected'));
