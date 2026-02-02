@@ -1,31 +1,34 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
-import { Text, TextInput, Button, Surface, Divider, useTheme, HelperText } from 'react-native-paper';
+import { Text, TextInput, Button, Surface, useTheme, HelperText, Checkbox } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-import { useAuthStore } from '../../stores/authStore';
-import { AuthStackParamList } from '../../navigation/AuthNavigator';
-import { validateEmail, validatePassword } from '../../utils/helpers';
+import { useAuthStore } from '../stores/authStore';
+import { AuthStackParamList } from '../../../shared/types';
+import { validateEmail, validatePassword } from '../../../shared/utils/helpers';
 
-type LoginScreenProps = {
-  navigation: NativeStackNavigationProp<AuthStackParamList, 'Login'>;
+type RegisterScreenProps = {
+  navigation: NativeStackNavigationProp<AuthStackParamList, 'Register'>;
 };
 
-const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
+const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
   const theme = useTheme();
-  const { login, loginWithGoogle, loginWithApple, isLoading, error, clearError } = useAuthStore();
+  const { register, isLoading, error, clearError } = useAuthStore();
 
+  const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
 
-  const handleLogin = async () => {
+  const handleRegister = async () => {
     clearError();
     setLocalError(null);
 
-    if (!email || !password) {
+    if (!displayName || !email || !password || !confirmPassword) {
       setLocalError('Please fill in all fields');
       return;
     }
@@ -35,24 +38,26 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
       return;
     }
 
-    try {
-      await login(email, password);
-    } catch (error) {
-      // Error is handled by the store
+    const passwordValidation = validatePassword(password);
+    if (!passwordValidation.valid) {
+      setLocalError(passwordValidation.message || 'Invalid password');
+      return;
     }
-  };
 
-  const handleGoogleLogin = async () => {
-    try {
-      await loginWithGoogle();
-    } catch (error) {
-      // Error is handled by the store
+    if (password !== confirmPassword) {
+      setLocalError('Passwords do not match');
+      return;
     }
-  };
 
-  const handleAppleLogin = async () => {
+    if (!agreedToTerms) {
+      setLocalError('Please agree to the terms and conditions');
+      return;
+    }
+
     try {
-      await loginWithApple();
+      await register(email, password, displayName);
+      // Navigate to biometric setup after successful registration
+      navigation.replace('BiometricSetup', { userId: 'temp' });
     } catch (error) {
       // Error is handled by the store
     }
@@ -69,18 +74,24 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.header}>
-            <Text variant="headlineLarge" style={[styles.title, { color: theme.colors.primary }]}>
-              Life
+            <Text variant="headlineMedium" style={[styles.title, { color: theme.colors.primary }]}>
+              Create Account
             </Text>
-            <Text variant="titleMedium" style={{ color: theme.colors.onSurfaceVariant }}>
-              Manage your schedule & spending
+            <Text variant="bodyMedium" style={{ color: theme.colors.onSurfaceVariant }}>
+              Start managing your life better
             </Text>
           </View>
 
           <Surface style={styles.formContainer} elevation={1}>
-            <Text variant="titleLarge" style={styles.formTitle}>
-              Welcome Back
-            </Text>
+            <TextInput
+              label="Full Name"
+              value={displayName}
+              onChangeText={setDisplayName}
+              autoComplete="name"
+              style={styles.input}
+              disabled={isLoading}
+              error={!!localError}
+            />
 
             <TextInput
               label="Email"
@@ -91,7 +102,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
               autoComplete="email"
               style={styles.input}
               disabled={isLoading}
-              error={!!localError || !!error}
+              error={!!localError}
             />
 
             <TextInput
@@ -107,8 +118,28 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
               }
               style={styles.input}
               disabled={isLoading}
-              error={!!localError || !!error}
+              error={!!localError}
             />
+
+            <TextInput
+              label="Confirm Password"
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+              secureTextEntry={!showPassword}
+              style={styles.input}
+              disabled={isLoading}
+              error={!!localError}
+            />
+
+            <View style={styles.termsContainer}>
+              <Checkbox
+                status={agreedToTerms ? 'checked' : 'unchecked'}
+                onPress={() => setAgreedToTerms(!agreedToTerms)}
+              />
+              <Text variant="bodySmall" style={styles.termsText}>
+                I agree to the Terms of Service and Privacy Policy
+              </Text>
+            </View>
 
             {(localError || error) && (
               <HelperText type="error" visible={true}>
@@ -118,47 +149,22 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
 
             <Button
               mode="contained"
-              onPress={handleLogin}
+              onPress={handleRegister}
               loading={isLoading}
               disabled={isLoading}
-              style={styles.loginButton}
+              style={styles.registerButton}
               contentStyle={styles.buttonContent}
             >
-              Sign In
+              Create Account
             </Button>
 
             <Button
               mode="text"
-              onPress={() => navigation.navigate('Register')}
+              onPress={() => navigation.navigate('Login')}
               disabled={isLoading}
-              style={styles.registerButton}
             >
-              Don't have an account? Sign Up
+              Already have an account? Sign In
             </Button>
-
-            <Divider style={styles.divider} />
-
-            <Button
-              mode="outlined"
-              onPress={handleGoogleLogin}
-              disabled={isLoading}
-              style={styles.socialButton}
-              icon="google"
-            >
-              Continue with Google
-            </Button>
-
-            {Platform.OS === 'ios' && (
-              <Button
-                mode="outlined"
-                onPress={handleAppleLogin}
-                disabled={isLoading}
-                style={styles.socialButton}
-                icon="apple"
-              >
-                Continue with Apple
-              </Button>
-            )}
           </Surface>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -180,7 +186,7 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    marginBottom: 32,
+    marginBottom: 24,
   },
   title: {
     fontWeight: 'bold',
@@ -190,30 +196,25 @@ const styles = StyleSheet.create({
     padding: 24,
     borderRadius: 16,
   },
-  formTitle: {
-    textAlign: 'center',
-    marginBottom: 24,
-    fontWeight: '600',
-  },
   input: {
     marginBottom: 16,
   },
-  loginButton: {
+  termsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  termsText: {
+    flex: 1,
+    marginLeft: 8,
+  },
+  registerButton: {
     marginTop: 8,
     marginBottom: 16,
   },
   buttonContent: {
     paddingVertical: 8,
   },
-  registerButton: {
-    marginBottom: 16,
-  },
-  divider: {
-    marginVertical: 16,
-  },
-  socialButton: {
-    marginBottom: 12,
-  },
 });
 
-export default LoginScreen;
+export default RegisterScreen;

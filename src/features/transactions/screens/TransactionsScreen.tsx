@@ -6,10 +6,10 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { format, startOfMonth, endOfMonth, subMonths } from 'date-fns';
 
-import { useAuthStore } from '../../stores/authStore';
-import { useTransactionStore } from '../../stores/transactionStore';
-import { formatCurrency, getCategoryIcon, getCategoryColor, capitalizeFirst } from '../../utils/helpers';
-import { Transaction, TransactionCategory } from '../../types';
+import { useAuthStore } from '../../auth/stores/authStore';
+import { useTransactionStore } from '../stores/transactionStore';
+import { formatCurrency, getCategoryIcon, getCategoryColor, capitalizeFirst } from '../../../shared/utils/helpers';
+import { Transaction, TransactionCategory } from '../../../shared/types';
 
 const TransactionsScreen: React.FC = () => {
   const theme = useTheme();

@@ -5,9 +5,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isToday } from 'date-fns';
 
-import { useCalendarStore } from '../../stores/calendarStore';
-import { CalendarEvent } from '../../types';
-import { formatTime, isEventToday } from '../../utils/helpers';
+import { useCalendarStore } from '../stores/calendarStore';
+import { CalendarEvent } from '../../../shared/types';
+import { formatTime, isEventToday } from '../../../shared/utils/helpers';
 
 const CalendarScreen: React.FC = () => {
   const theme = useTheme();

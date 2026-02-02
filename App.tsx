@@ -1,36 +1,49 @@
-import React, { useEffect } from 'react';
-import { StatusBar } from 'react-native';
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { LogBox } from 'react-native';
+import { GestureHandlerRootView, StyleSheet, View } from 'react-native';
+import { useAuthStore } from './src/features/auth';
+import { MainNavigator } from './src/navigation/MainNavigator';
+import { AuthNavigator } from './src/navigation/AuthNavigator';
+import { RootStackParamList } from './src/shared/types';
 
-import AppNavigator from './src/navigation/AppNavigator';
-import { useAuthStore } from './src/stores/authStore';
-import { useThemeStore } from './src/stores/themeStore';
-
-// Ignore specific warnings
-LogBox.ignoreLogs([
-  'ViewPropTypes will be removed',
-  'ColorPropType will be removed',
-]);
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function App(): React.JSX.Element {
-  const { checkAuthState } = useAuthStore();
-  const { isDarkMode } = useThemeStore();
+  const { user, isLoading } = useAuthStore();
 
-  useEffect(() => {
-    // Check authentication state on app start
-    checkAuthState();
-  }, []);
+  if (isLoading) {
+    return (
+      <SafeAreaProvider>
+        <NavigationContainer>
+          <View style={{ flex: 1, backgroundColor: '#fff' }} />
+        </NavigationContainer>
+      </SafeAreaProvider>
+    );
+  }
 
   return (
-    <SafeAreaProvider>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={isDarkMode ? '#0F172A' : '#F8FAFC'}
-      />
-      <AppNavigator />
-    </SafeAreaProvider>
+    <GestureHandlerRootView style={styles.container}>
+      <SafeAreaProvider>
+        <NavigationContainer>
+          <Stack.Navigator screenOptions={{ headerShown: false }}>
+            {user ? (
+              <Stack.Screen name="Main" component={MainNavigator} />
+            ) : (
+              <Stack.Screen name="Auth" component={AuthNavigator} />
+            )}
+          </Stack.Navigator>
+        </NavigationContainer>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});
 
 export default App;

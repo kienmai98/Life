@@ -5,11 +5,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-import { useAuthStore } from '../../stores/authStore';
-import { useTransactionStore } from '../../stores/transactionStore';
-import { useCalendarStore } from '../../stores/calendarStore';
-import { formatCurrency, formatDate, formatTime, isEventToday } from '../../utils/helpers';
-import { TransactionCategory } from '../../types';
+import { useAuthStore } from '../../auth/stores/authStore';
+import { useTransactionStore } from '../../transactions/stores/transactionStore';
+import { useCalendarStore } from '../../calendar/stores/calendarStore';
+import { formatCurrency, formatDate, formatTime, isEventToday } from '../../../shared/utils/helpers';
 
 const DashboardScreen: React.FC = () => {
   const theme = useTheme();

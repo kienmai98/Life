@@ -16,8 +16,8 @@ import {
 } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { useAuthStore } from '../../stores/authStore';
-import { useThemeStore } from '../../stores/themeStore';
+import { useAuthStore } from '../../auth/stores/authStore';
+import { useAppStore } from '../stores/appStore';
 import { useTransactionStore } from '../../stores/transactionStore';
 import storage from '../../utils/storage';
 

@@ -27,7 +27,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { format } from 'date-fns';
 
-import { useAuthStore } from '../../stores/authStore';
+import { useTransactionStore } from '../stores/transactionStore';
+import { useAuthStore } from '../../auth/stores/authStore';
 import { useTransactionStore } from '../../stores/transactionStore';
 import { TransactionCategory, PaymentMethod } from '../../types';
 import { getCategoryIcon, getCategoryColor, capitalizeFirst } from '../../utils/helpers';
