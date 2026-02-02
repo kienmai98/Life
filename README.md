@@ -2,18 +2,27 @@
 
 A React Native application for managing your schedule and spending. Built for busy people who want to improve their life quality.
 
-## Features
+## Features (MVP)
 
 - **Authentication**: Email/Password, Google Sign-In, Apple Sign-In
 - **Biometric Authentication**: Face ID / Touch ID support
 - **Schedule Management**: Google Calendar integration
-- **Expense Tracking**: Transaction management with categories
+- **Expense Tracking**: Manual transaction entry with categories
+  - Amount, description, category, date
+  - Optional receipt photo attachment
+  - Optional notes
 - **Dashboard**: Overview of schedule and spending
 - **Push Notifications**: Firebase Cloud Messaging
-- **Receipt Scanning**: Camera integration for receipts
-- **Location Services**: Context-aware features
 - **Offline Support**: Background sync with AsyncStorage
 - **Dark Mode**: Full theming support
+
+## Coming Soon (Premium Features)
+
+- CSV import for transactions
+- Bank API integration
+- Advanced analytics and insights
+- Budget planning tools
+- Recurring transactions
 
 ## Tech Stack
 
